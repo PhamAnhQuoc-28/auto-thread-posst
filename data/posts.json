@@ -1,0 +1,18 @@
+[
+  {
+    "id": "post-001",
+    "text": "Hello Threads 👋",
+    "status": "failed",
+    "createdAt": null,
+    "publishedAt": null,
+    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('div[contenteditable=\"true\"]').first() to be hidden\u001b[22m\n\u001b[2m    22 × locator resolved to visible <div tabindex=\"0\" role=\"textbox\" spellcheck=\"true\" contenteditable=\"true\" data-lexical-editor=\"true\" aria-placeholder=\"What's new?\" aria-label=\"Empty text field. Type to compose a new post.\" class=\"xzsf02u xw2csxc x1odjw0f x1n2onr6 x1hnll1o xpqswwc notranslate\">…</div>\u001b[22m\n"
+  },
+  {
+    "id": "post-002",
+    "text": "This is a test post.",
+    "status": "published",
+    "createdAt": null,
+    "publishedAt": "2026-09-22T15:19:25.304Z",
+    "error": null
+  }
+]
