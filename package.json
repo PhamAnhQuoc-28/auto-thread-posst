@@ -5,14 +5,36 @@
   "main": "src/index.ts",
   "scripts": {
     "login": "tsx src/login.ts",
-    "post": "tsx src/index.ts"
+    "post": "tsx src/index.ts",
+    "session": "tsx src/session/run-session.ts",
+    "editor": "tsx src/editor/server.ts",
+    "build:ui": "vite build",
+    "typecheck:ui": "tsc --noEmit -p ui/tsconfig.json",
+    "validate": "tsx src/validate.ts",
+    "test:media": "node --import tsx --test tests/media-upload.test.ts",
+    "test:session": "node --import tsx --test tests/session-plan.test.ts",
+    "test:editor": "node --import tsx --test tests/editor-api.test.ts",
+    "test:editor-ui": "node --import tsx --test tests/editor-ui.test.ts"
   },
   "dependencies": {
-    "playwright": "^1.42.1"
+    "@fastify/multipart": "^10.1.2",
+    "@fastify/static": "^10.1.5",
+    "@tiptap/extension-placeholder": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
+    "emoji-picker-react": "^4.22.2",
+    "fastify": "^5.12.5",
+    "playwright": "^1.42.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^8.3.1"
   }
 }

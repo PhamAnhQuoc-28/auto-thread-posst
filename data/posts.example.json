@@ -1,0 +1,13 @@
+[
+  {
+    "id": "post-new-001",
+    "text": "Nội dung bài viết. Dùng \n để xuống dòng.",
+    "images": [],
+    "topic": "squishy",
+    "scheduledAt": "2026-09-24T09:00:00+07:00",
+    "status": "draft",
+    "createdAt": "2026-09-23T07:00:00.000Z",
+    "publishedAt": null,
+    "error": null
+  }
+]

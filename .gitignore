@@ -3,3 +3,7 @@ browser-data/
 logs/
 .env
 dist/
+ui/dist/
+data/media/*
+!data/media/.gitkeep
+data/.posting.lock

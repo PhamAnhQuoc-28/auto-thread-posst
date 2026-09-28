@@ -1,0 +1,18 @@
+[
+  {
+    "id": "product-a",
+    "name": "Sản phẩm A",
+    "contents": [
+      { "id": "a1", "text": "Nội dung A1", "images": [], "topic": "squishy" },
+      { "id": "a2", "text": "Nội dung A2", "images": [], "topic": "squishy" }
+    ]
+  },
+  {
+    "id": "product-b",
+    "name": "Sản phẩm B",
+    "contents": [
+      { "id": "b1", "text": "Nội dung B1", "images": [] },
+      { "id": "b2", "text": "Nội dung B2", "images": [] }
+    ]
+  }
+]

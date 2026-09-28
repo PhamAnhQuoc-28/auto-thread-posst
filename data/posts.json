@@ -14,5 +14,66 @@
     "createdAt": null,
     "publishedAt": "2026-09-22T15:19:25.304Z",
     "error": null
+  },
+  {
+    "id": "post-live-test-2026-09-28",
+    "text": "Kiểm tra hệ thống đăng bài tự động ngày 28/09/2026",
+    "images": [],
+    "scheduledAt": null,
+    "status": "published",
+    "createdAt": "2026-09-28T08:09:34.946Z",
+    "submittedAt": "2026-09-28T08:09:47.501Z",
+    "publishedAt": "2026-09-28T08:11:19.552Z",
+    "error": null
+  },
+  {
+    "id": "post-topic-test-squishy-2026-09-28",
+    "text": "Kiểm tra đăng bài tự động với topic squishy ngày 28/09/2026",
+    "topic": "squishy",
+    "images": [],
+    "scheduledAt": null,
+    "status": "published",
+    "createdAt": "2026-09-28T08:21:41.352Z",
+    "submittedAt": "2026-09-28T08:21:53.527Z",
+    "publishedAt": "2026-09-28T08:26:09.282Z",
+    "error": null
+  },
+  {
+    "id": "run-2026-09-28-morning-emoji-test-20260928",
+    "text": "Kiểm tra emoji từ editor ✨😊❤️🔥 ngày 28/09/2026.",
+    "images": [],
+    "topic": null,
+    "scheduledAt": "2026-09-28T09:10:10.875Z",
+    "status": "published",
+    "createdAt": "2026-09-28T09:10:10.875Z",
+    "submittedAt": "2026-09-28T09:10:20.559Z",
+    "publishedAt": "2026-09-28T09:12:05.403Z",
+    "error": null
+  },
+  {
+    "id": "run-2026-09-28-morning-emoji16-test-20260928",
+    "text": "Kiểm tra emoji mới 🫩 từ trình soạn ngày 28/09/2026.",
+    "images": [],
+    "topic": null,
+    "scheduledAt": "2026-09-28T09:33:38.917Z",
+    "status": "published",
+    "createdAt": "2026-09-28T09:33:38.917Z",
+    "submittedAt": "2026-09-28T09:33:47.859Z",
+    "publishedAt": "2026-09-28T09:35:03.973Z",
+    "error": null
+  },
+  {
+    "id": "run-2026-09-28-morning-flan-squishy-sample-20260928",
+    "text": "[Bài thử với ảnh mẫu]\nNhìn thì tưởng bánh flan caramel thật, bóp thử mới biết là đồ chơi giảm stress. Mà cái lớp caramel bóng bóng với độ mềm ú nu này thì ai mà chịu nổi!!! 😋\n📍 Ảnh mẫu để kiểm tra đăng bài.",
+    "images": [
+      "data/media/flan-squishy-sample-20260928/a7b2e30c-538e-48f2-aa27-7cfe22ec6ffc.png"
+    ],
+    "topic": "squishy",
+    "scheduledAt": "2026-09-28T09:43:45.664Z",
+    "status": "published",
+    "createdAt": "2026-09-28T09:43:45.664Z",
+    "submittedAt": "2026-09-28T09:43:59.236Z",
+    "publishedAt": "2026-09-28T09:44:54.696Z",
+    "error": null
   }
 ]

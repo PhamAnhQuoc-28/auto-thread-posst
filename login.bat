@@ -7,5 +7,7 @@ echo ======================================
 echo.
 
 call npm run login
+set "loginExitCode=%errorlevel%"
 
 pause
+exit /b %loginExitCode%
