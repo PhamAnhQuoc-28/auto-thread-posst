@@ -174,7 +174,7 @@ export default function App() {
           if (target) target.images.push(result.path);
         });
       }
-      setNotice('Ảnh đã được tải lên máy. Bấm Lưu để gắn ảnh vào nội dung.');
+      setNotice('Media đã được tải lên máy. Bấm Lưu để gắn vào nội dung.');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -239,7 +239,7 @@ export default function App() {
 
       <main className="main-area">
         <header className="topbar">
-          <div><div className="eyebrow">BẢNG SOẠN NỘI DUNG</div><h1>Chuẩn bị bài đăng</h1><p>Soạn một lần, dùng cho lượt sáng và chiều.</p></div>
+          <div><h2>Chuẩn bị bài đăng</h2></div>
           <div className="top-actions">
             <span className={`save-state ${dirty ? 'unsaved' : ''}`}>{dirty ? '● Chưa lưu' : '✓ Đã lưu'}</span>
             <button className="button secondary" onClick={() => void load()} disabled={busy}>Tải lại</button>
@@ -267,8 +267,8 @@ export default function App() {
                 <div className="variant-header"><strong>Phiên bản {selectedContent + 1}</strong><div className="inline-actions"><button onClick={() => moveContent(-1)} disabled={selectedContent === 0}>←</button><button onClick={() => moveContent(1)} disabled={selectedContent === product.contents.length - 1}>→</button><button className="danger-link" onClick={removeContent} disabled={product.contents.length <= 1}>Xóa phiên bản</button></div></div>
                 <div className="form-grid"><label>Mã phiên bản<input value={content.id} onChange={event => editContent(draft => { draft.id = event.target.value; })} placeholder="a1" /></label><label>Community or topic <span className="field-hint">Không bắt buộc</span><input value={content.topic || ''} onChange={event => editContent(draft => { draft.topic = event.target.value || null; })} placeholder="squishy" /></label></div>
                 <div className="full-label"><div className="editor-field-label">Nội dung bài viết</div><ContentEditor key={`${editorLoadKey}-${selectedProduct}-${selectedContent}`} value={content.text} onChange={text => editContent(draft => { draft.text = text; })} /><span className="field-hint">Nội dung được lưu thành văn bản thuần cho Threads. Mỗi sản phẩm dùng lần lượt phiên bản 1, 2, 3 rồi quay về phiên bản 1.</span></div>
-                <div className="media-heading"><div><strong>Hình ảnh <span className="count">{content.images.length}</span></strong><p>Ảnh sẽ đăng theo thứ tự bên dưới. JPG, PNG hoặc WebP, tối đa 15 MB mỗi ảnh.</p></div><label className="button subtle upload-button">{uploading ? 'Đang tải ảnh…' : '+ Tải ảnh lên'}<input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={uploading || !/^[a-zA-Z0-9_-]+$/.test(product.id)} onChange={event => { void uploadImages(event.target.files); event.target.value = ''; }} /></label></div>
-                <div className="image-grid">{content.images.map((image, index) => <div className="image-card" key={`${image}-${index}`}><img src={imageUrl(image)} alt={`Ảnh ${index + 1}`} /><div><span>Ảnh {index + 1}</span><div className="inline-actions"><button onClick={() => moveImage(index, -1)} disabled={index === 0}>←</button><button onClick={() => moveImage(index, 1)} disabled={index === content.images.length - 1}>→</button><button className="danger-link" onClick={() => editContent(draft => { draft.images.splice(index, 1); })}>Xóa</button></div></div><small title={image}>{image.split('/').at(-1)}</small></div>)}{!content.images.length && <div className="media-empty">Chưa có ảnh. Bài viết có thể chỉ gồm chữ.</div>}</div>
+                <div className="media-heading"><div><strong>Hình ảnh & Video <span className="count">{content.images.length}</span></strong><p>Media sẽ đăng theo thứ tự bên dưới. JPG, PNG, WebP, MP4 hoặc MOV.</p></div><label className="button subtle upload-button">{uploading ? 'Đang tải media…' : '+ Tải media lên'}<input type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" multiple disabled={uploading || !/^[a-zA-Z0-9_-]+$/.test(product.id)} onChange={event => { void uploadImages(event.target.files); event.target.value = ''; }} /></label></div>
+                <div className="image-grid">{content.images.map((image, index) => <div className="image-card" key={`${image}-${index}`}>{image.match(/\.(mp4|mov)$/i) ? <video src={imageUrl(image)} autoPlay muted loop style={{ height: '120px', width: '100%', objectFit: 'cover', background: '#edf2f3' }} /> : <img src={imageUrl(image)} alt={`Media ${index + 1}`} />}<div><span>Media {index + 1}</span><div className="inline-actions"><button onClick={() => moveImage(index, -1)} disabled={index === 0}>←</button><button onClick={() => moveImage(index, 1)} disabled={index === content.images.length - 1}>→</button><button className="danger-link" onClick={() => editContent(draft => { draft.images.splice(index, 1); })}>Xóa</button></div></div><small title={image}>{image.split('/').at(-1)}</small></div>)}{!content.images.length && <div className="media-empty">Chưa có media. Bài viết có thể chỉ gồm chữ.</div>}</div>
               </div>}
             </section>
           </> : <section className="panel empty-panel"><span className="empty-icon">✦</span><h2>Bắt đầu với sản phẩm đầu tiên</h2><p>Thêm sản phẩm, tạo các phiên bản nội dung theo ngày và tải ảnh lên. Sau đó bấm Lưu để dùng với file post.bat.</p><button className="button primary" onClick={addProduct}>+ Thêm sản phẩm</button></section>}

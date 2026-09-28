@@ -1,79 +1,112 @@
 [
   {
-    "id": "post-001",
-    "text": "Hello Threads 👋",
-    "status": "failed",
-    "createdAt": null,
-    "publishedAt": null,
-    "error": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('div[contenteditable=\"true\"]').first() to be hidden\u001b[22m\n\u001b[2m    22 × locator resolved to visible <div tabindex=\"0\" role=\"textbox\" spellcheck=\"true\" contenteditable=\"true\" data-lexical-editor=\"true\" aria-placeholder=\"What's new?\" aria-label=\"Empty text field. Type to compose a new post.\" class=\"xzsf02u xw2csxc x1odjw0f x1n2onr6 x1hnll1o xpqswwc notranslate\">…</div>\u001b[22m\n"
-  },
-  {
-    "id": "post-002",
-    "text": "This is a test post.",
-    "status": "published",
-    "createdAt": null,
-    "publishedAt": "2026-09-22T15:19:25.304Z",
-    "error": null
-  },
-  {
-    "id": "post-live-test-2026-09-28",
-    "text": "Kiểm tra hệ thống đăng bài tự động ngày 28/09/2026",
-    "images": [],
-    "scheduledAt": null,
-    "status": "published",
-    "createdAt": "2026-09-28T08:09:34.946Z",
-    "submittedAt": "2026-09-28T08:09:47.501Z",
-    "publishedAt": "2026-09-28T08:11:19.552Z",
-    "error": null
-  },
-  {
-    "id": "post-topic-test-squishy-2026-09-28",
-    "text": "Kiểm tra đăng bài tự động với topic squishy ngày 28/09/2026",
-    "topic": "squishy",
-    "images": [],
-    "scheduledAt": null,
-    "status": "published",
-    "createdAt": "2026-09-28T08:21:41.352Z",
-    "submittedAt": "2026-09-28T08:21:53.527Z",
-    "publishedAt": "2026-09-28T08:26:09.282Z",
-    "error": null
-  },
-  {
-    "id": "run-2026-09-28-morning-emoji-test-20260928",
-    "text": "Kiểm tra emoji từ editor ✨😊❤️🔥 ngày 28/09/2026.",
-    "images": [],
-    "topic": null,
-    "scheduledAt": "2026-09-28T09:10:10.875Z",
-    "status": "published",
-    "createdAt": "2026-09-28T09:10:10.875Z",
-    "submittedAt": "2026-09-28T09:10:20.559Z",
-    "publishedAt": "2026-09-28T09:12:05.403Z",
-    "error": null
-  },
-  {
-    "id": "run-2026-09-28-morning-emoji16-test-20260928",
-    "text": "Kiểm tra emoji mới 🫩 từ trình soạn ngày 28/09/2026.",
-    "images": [],
-    "topic": null,
-    "scheduledAt": "2026-09-28T09:33:38.917Z",
-    "status": "published",
-    "createdAt": "2026-09-28T09:33:38.917Z",
-    "submittedAt": "2026-09-28T09:33:47.859Z",
-    "publishedAt": "2026-09-28T09:35:03.973Z",
-    "error": null
-  },
-  {
-    "id": "run-2026-09-28-morning-flan-squishy-sample-20260928",
-    "text": "[Bài thử với ảnh mẫu]\nNhìn thì tưởng bánh flan caramel thật, bóp thử mới biết là đồ chơi giảm stress. Mà cái lớp caramel bóng bóng với độ mềm ú nu này thì ai mà chịu nổi!!! 😋\n📍 Ảnh mẫu để kiểm tra đăng bài.",
+    "id": "run-2026-09-28-morning-butter-squishy",
+    "text": "Hôm nay toai vui quá\nTôi sale 2 mẫu này\n🏷️ 20.000đ\nSale tới hết CN 27/9 về lại 25.000đ nhen\n📍Shop online Da Nang",
     "images": [
-      "data/media/flan-squishy-sample-20260928/a7b2e30c-538e-48f2-aa27-7cfe22ec6ffc.png"
+      "data/media/butter-squishy/3875ad7d-4ef7-459d-a587-bc8fe16c6e4e.png"
+    ],
+    "topic": "viral",
+    "scheduledAt": "2026-09-28T14:56:08.141Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-28T14:56:08.141Z",
+    "submittedAt": "2026-09-28T14:56:24.989Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-28",
+      "slot": "morning",
+      "dayNumber": 1,
+      "productId": "butter-squishy",
+      "contentId": "v1",
+      "order": 0
+    }
+  },
+  {
+    "id": "run-2026-09-28-morning-lego-flowers",
+    "text": "Em đang sẵn mấy mẫu hoa lego này ạ\n15.000đ 1 bông\n📍Shop online Da Nang",
+    "images": [
+      "data/media/lego-flowers/ai_lego_boxes.jpg"
+    ],
+    "topic": "viral",
+    "scheduledAt": "2026-09-28T14:56:38.141Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-28T14:56:08.141Z",
+    "submittedAt": "2026-09-28T14:57:07.758Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-28",
+      "slot": "morning",
+      "dayNumber": 1,
+      "productId": "lego-flowers",
+      "contentId": "v1",
+      "order": 1
+    }
+  },
+  {
+    "id": "run-2026-09-28-morning-mangosteen-vaseline",
+    "text": "Toai gom luôn em măng cụt vaseline\n🏷️ 50.000đ 1 em\nMua càng nhiều sale càng nhiều nha mấy mommm\n📍Shop online Da Nang",
+    "images": [
+      "data/media/mangosteen-vaseline/53b6f401-ed00-449f-ad38-b80178031881.png"
     ],
     "topic": "squishy",
-    "scheduledAt": "2026-09-28T09:43:45.664Z",
-    "status": "published",
-    "createdAt": "2026-09-28T09:43:45.664Z",
-    "submittedAt": "2026-09-28T09:43:59.236Z",
-    "publishedAt": "2026-09-28T09:44:54.696Z",
-    "error": null
+    "scheduledAt": "2026-09-28T14:57:08.141Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-28T14:56:08.141Z",
+    "submittedAt": "2026-09-28T14:57:50.585Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-28",
+      "slot": "morning",
+      "dayNumber": 1,
+      "productId": "mangosteen-vaseline",
+      "contentId": "v1",
+      "order": 2
+    }
+  },
+  {
+    "id": "run-2026-09-28-morning-squishy-cheese",
+    "text": "📦 GIỮA TUẦN NÀY HÀNG VỀ - NHẬN ORDER NGAY!\nAi mê squishy thì tranh thủ chốt đơn nha\n🧀 Squishy Cheese size 8cm\n📍Shop online Da Nang",
+    "images": [
+      "data/media/squishy-cheese/flan-squishy.png"
+    ],
+    "topic": "squishy",
+    "scheduledAt": "2026-09-28T14:57:38.141Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-28T14:56:08.141Z",
+    "submittedAt": "2026-09-28T14:58:35.266Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-28",
+      "slot": "morning",
+      "dayNumber": 1,
+      "productId": "squishy-cheese",
+      "contentId": "v1",
+      "order": 3
+    }
+  },
+  {
+    "id": "run-2026-09-28-morning-squishy-vaseline",
+    "text": "Squishy butter vaseline 14cm\n📍Shop online Da Nang",
+    "images": [
+      "data/media/squishy-vaseline/4435974b-292d-4631-b782-64849540030a.png"
+    ],
+    "topic": null,
+    "scheduledAt": "2026-09-28T14:58:08.141Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-28T14:56:08.141Z",
+    "submittedAt": "2026-09-28T14:59:20.029Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-28",
+      "slot": "morning",
+      "dayNumber": 1,
+      "productId": "squishy-vaseline",
+      "contentId": "v1",
+      "order": 4
+    }
   }
 ]

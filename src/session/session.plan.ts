@@ -30,8 +30,8 @@ export function loadSessionConfig(): SessionConfig {
 export function validateSessionConfig(value: unknown): SessionConfig {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid session configuration');
   const config = value as Partial<SessionConfig>;
-  if (typeof config.intervalMinutes !== 'number' || !Number.isInteger(config.intervalMinutes) || config.intervalMinutes < 1) {
-    throw new Error('intervalMinutes must be a positive whole number');
+  if (typeof config.intervalMinutes !== 'number' || config.intervalMinutes <= 0) {
+    throw new Error('intervalMinutes must be a positive number');
   }
   if (typeof config.timeZone !== 'string' || !config.timeZone.trim()) {
     throw new Error('timeZone must be an IANA time zone name');
@@ -45,9 +45,18 @@ export function validateSessionConfig(value: unknown): SessionConfig {
 }
 
 export function loadProducts(): Product[] {
-  const productsPath = path.resolve(process.cwd(), 'data', 'products.json');
-  const value: unknown = JSON.parse(fs.readFileSync(productsPath, 'utf-8'));
-  return validateProducts(value);
+  const productsDir = path.resolve(process.cwd(), 'data', 'products');
+  let arr: any[] = [];
+  if (fs.existsSync(productsDir)) {
+    const files = fs.readdirSync(productsDir).filter(f => f.endsWith('.json'));
+    for (const file of files) {
+      arr.push(JSON.parse(fs.readFileSync(path.join(productsDir, file), 'utf-8')));
+    }
+  } else {
+    const productsPath = path.resolve(process.cwd(), 'data', 'products.json');
+    if (fs.existsSync(productsPath)) arr = JSON.parse(fs.readFileSync(productsPath, 'utf-8'));
+  }
+  return validateProducts(arr);
 }
 
 export function validateProducts(value: unknown, rootDir: string = process.cwd(), allowEmpty = false): Product[] {

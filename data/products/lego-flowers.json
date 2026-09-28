@@ -1,0 +1,14 @@
+{
+  "id": "lego-flowers",
+  "name": "Hoa Lego",
+  "contents": [
+    {
+      "id": "v1",
+      "text": "Em đang sẵn mấy mẫu hoa lego này ạ\n15.000đ 1 bông\n📍Shop online Da Nang",
+      "images": [
+        "data/media/lego-flowers/ai_lego_boxes.jpg"
+      ],
+      "topic": "viral"
+    }
+  ]
+}

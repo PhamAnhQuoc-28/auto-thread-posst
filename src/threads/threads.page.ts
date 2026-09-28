@@ -111,13 +111,13 @@ export class ThreadsPage {
 
   async attachImages(imageFiles: string[]): Promise<void> {
     if (!imageFiles.length) return;
-    Logger.info(`Attaching ${imageFiles.length} image(s)...`);
+    Logger.info(`Attaching ${imageFiles.length} media file(s)...`);
     const scope = await this.composerScope();
-    const previews = scope.locator('img');
+    const previews = scope.locator('img, video');
     const beforeCount = await previews.count();
-    const beforeSources = new Set(await previews.evaluateAll(images => images.map(image => image.getAttribute('src') || '')));
+    const beforeSources = new Set(await previews.evaluateAll(media => media.map(m => m.getAttribute('src') || '')));
 
-    const preferredInputs = scope.locator('input[type="file"][accept*="image"], input[type="file"][accept*=".jpg"], input[type="file"][accept*=".jpeg"], input[type="file"][accept*=".png"], input[type="file"][accept*=".webp"]');
+    const preferredInputs = scope.locator('input[type="file"][accept*="image"], input[type="file"][accept*="video"], input[type="file"][accept*=".jpg"], input[type="file"][accept*=".jpeg"], input[type="file"][accept*=".png"], input[type="file"][accept*=".webp"], input[type="file"][accept*=".mp4"]');
     const inputs = await preferredInputs.count() ? preferredInputs : scope.locator('input[type="file"]');
     if (await inputs.count()) {
       const input = inputs.last();
@@ -139,15 +139,15 @@ export class ThreadsPage {
 
     const deadline = Date.now() + 15000;
     while (Date.now() < deadline) {
-      const sources = await previews.evaluateAll(images => images.map(image => image.getAttribute('src') || ''));
+      const sources = await previews.evaluateAll(media => media.map(m => m.getAttribute('src') || ''));
       const newSources = sources.filter(source => source && !beforeSources.has(source));
       if (sources.length >= beforeCount + imageFiles.length || newSources.length >= imageFiles.length) {
-        Logger.info(`Image preview ready (${imageFiles.length} image(s)).`);
+        Logger.info(`Media preview ready (${imageFiles.length} file(s)).`);
         return;
       }
       await this.page.waitForTimeout(250);
     }
-    throw new Error(`Image preview did not appear for all ${imageFiles.length} file(s); post was not submitted.`);
+    throw new Error(`Media preview did not appear for all ${imageFiles.length} file(s); post was not submitted.`);
   }
 
   async publish(): Promise<boolean> {

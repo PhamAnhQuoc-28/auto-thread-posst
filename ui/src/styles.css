@@ -5,7 +5,7 @@ button,input{font:inherit}
 button{cursor:pointer}
 button:disabled{cursor:not-allowed;opacity:.48}
 .app-shell{display:flex;min-height:100vh}
-.sidebar{width:274px;min-width:274px;background:#12243b;color:#eaf2fb;display:flex;flex-direction:column;min-height:100vh}
+.sidebar{position:sticky;top:0;max-height:100vh;width:274px;min-width:274px;background:#12243b;color:#eaf2fb;display:flex;flex-direction:column;min-height:100vh}
 .brand{display:flex;align-items:center;gap:12px;padding:27px 23px 33px;font-size:18px;font-weight:760;letter-spacing:-.5px}
 .brand-mark{width:38px;height:38px;border-radius:12px;background:#e0f7bd;color:#16372b;display:grid;place-items:center;font-size:28px;font-weight:700}
 .brand small{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#9fb1c5;margin-top:4px;font-weight:700}
@@ -25,7 +25,7 @@ button:disabled{cursor:not-allowed;opacity:.48}
 .sidebar-footer{padding:23px;color:#9baec0;font-size:11px;line-height:1.7;border-top:1px solid #30445b}
 .sidebar-footer code{font-size:11px;color:#c4dece}
 .main-area{flex:1;min-width:0}
-.topbar{background:#fff;border-bottom:1px solid #e0e6eb;padding:26px clamp(22px,4vw,58px);display:flex;justify-content:space-between;gap:24px;align-items:center}
+.topbar{background:#fff;border-bottom:1px solid #e0e6eb;padding:14px clamp(22px,4vw,58px);display:flex;justify-content:space-between;gap:24px;align-items:center;position:sticky;top:0;z-index:20}
 .eyebrow{color:#43856c;font-size:10px;font-weight:840;letter-spacing:1.7px;margin-bottom:7px}
 h1,h2,p{margin-top:0}
 h1{font-size:27px;line-height:1.1;letter-spacing:-1px;margin:0 0 7px;font-weight:780}
@@ -58,7 +58,7 @@ label{font-size:12px;font-weight:740;color:#3b4c5f;display:block}
 .editor-field-label{font-size:12px;font-weight:740;color:#3b4c5f;margin-bottom:8px}
 .content-editor{border:1px solid #d9e2e8;border-radius:11px;background:#fff;position:relative}
 .content-editor:focus-within{border-color:#3e9a74;box-shadow:0 0 0 3px #3e9a741c}
-.editor-toolbar{display:flex;align-items:center;gap:5px;padding:7px 10px;background:#f8fafb;border-bottom:1px solid #e5ebef;border-radius:10px 10px 0 0;flex-wrap:wrap;position:relative;z-index:5}
+.editor-toolbar{display:flex;align-items:center;gap:5px;padding:7px 10px;background:#f8fafb;border-bottom:1px solid #e5ebef;border-radius:10px 10px 0 0;flex-wrap:wrap;position:sticky;top:51px;z-index:10}
 .editor-toolbar>button{border:1px solid transparent;background:transparent;border-radius:6px;min-width:29px;height:29px;color:#405569;font-size:20px;line-height:1}
 .editor-toolbar>button:hover{background:#e8f1ed;border-color:#d4e5db}
 .editor-toolbar .picker-trigger{display:inline-flex;align-items:center;gap:7px;padding:0 9px;font-size:18px;font-weight:700}
@@ -73,7 +73,7 @@ label{font-size:12px;font-weight:740;color:#3b4c5f;display:block}
 .emoji-picker-language{display:flex;gap:5px;margin-bottom:10px}
 .emoji-picker-language button{border:1px solid #dce5e8;background:#f7f9fa;color:#687b8b;padding:5px 9px;border-radius:7px;font-size:11px;font-weight:700}
 .emoji-picker-language button.selected{background:#e5f3e9;border-color:#c9e5d1;color:#247a58}
-.emoji-picker-popover .EmojiPickerReact{max-width:100%}
+.emoji-picker-popover .EmojiPickerReact, .emoji-picker-popover .epr-body{max-width:100%;overscroll-behavior:contain}
 .emoji-picker-loading{padding:30px 14px;text-align:center;font-size:12px;color:#718492}
 .toolbar-divider{height:19px;border-left:1px solid #dce5e9;margin:0 6px}
 .editor-count{font-size:11px;color:#81909d;font-weight:650}

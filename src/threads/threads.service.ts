@@ -56,13 +56,15 @@ export class ThreadsService {
     });
   }
 
-  async postThread(post: Post): Promise<void> {
+  async postThread(post: Post, manageBrowserLifecycle = true): Promise<void> {
     PostRepository.updateStatus(post.id, 'publishing');
     try {
       const emojiIssue = describeUnsupportedEmoji(post.text);
       if (emojiIssue) throw new Error(emojiIssue);
       const imageFiles = resolveExistingPostImages(post.images ?? []);
-      await this.initPersistentBrowser(false);
+      if (manageBrowserLifecycle) await this.initPersistentBrowser(false);
+      else if (!this.context) await this.initPersistentBrowser(false);
+
       if (!this.page) throw new Error('Page not initialized');
       const threadsPage = new ThreadsPage(this.page);
 
@@ -106,7 +108,7 @@ export class ThreadsService {
       // Lưu screenshot khi lỗi
       await this.takeErrorScreenshot();
     } finally {
-      await this.closeBrowser();
+      if (manageBrowserLifecycle) await this.closeBrowser();
     }
   }
 

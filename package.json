@@ -8,6 +8,7 @@
     "post": "tsx src/index.ts",
     "session": "tsx src/session/run-session.ts",
     "editor": "tsx src/editor/server.ts",
+    "scrape": "tsx src/scraper/scraper.ts",
     "build:ui": "vite build",
     "typecheck:ui": "tsc --noEmit -p ui/tsconfig.json",
     "validate": "tsx src/validate.ts",

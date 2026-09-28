@@ -52,12 +52,27 @@ export function createEditorServer(rootDir: string = process.cwd(), serveUi = tr
   const postsPath = path.join(dataDir, 'posts.json');
   const mediaDir = path.join(dataDir, 'media');
 
+  const productsDir = path.join(dataDir, 'products');
+
   const readCatalog = () => {
-    const rawProducts = fs.existsSync(productsPath) ? fs.readFileSync(productsPath, 'utf-8') : '[]\n';
+    let rawProductsArr: any[] = [];
+    let hashContent = '';
+    if (fs.existsSync(productsDir)) {
+      const files = fs.readdirSync(productsDir).filter(f => f.endsWith('.json'));
+      for (const file of files) {
+        const content = fs.readFileSync(path.join(productsDir, file), 'utf-8');
+        rawProductsArr.push(JSON.parse(content));
+        hashContent += content;
+      }
+    } else if (fs.existsSync(productsPath)) {
+      const content = fs.existsSync(productsPath) ? fs.readFileSync(productsPath, 'utf-8') : '[]\n';
+      rawProductsArr = JSON.parse(content);
+      hashContent = content;
+    }
     const rawConfig = fs.existsSync(configPath) ? fs.readFileSync(configPath, 'utf-8') : '{"intervalMinutes":10,"timeZone":"Asia/Ho_Chi_Minh"}\n';
-    const products = validateProducts(JSON.parse(rawProducts), rootDir, true);
+    const products = validateProducts(rawProductsArr, rootDir, true);
     const config = validateSessionConfig(JSON.parse(rawConfig));
-    const revision = crypto.createHash('sha256').update(rawProducts).update('\n').update(rawConfig).digest('hex');
+    const revision = crypto.createHash('sha256').update(hashContent).update('\n').update(rawConfig).digest('hex');
     return { products, config, revision };
   };
   const readHistory = (): Post[] => validatePosts(readJson(postsPath, []), rootDir);
@@ -99,7 +114,18 @@ export function createEditorServer(rootDir: string = process.cwd(), serveUi = tr
     } catch (error) {
       throw badRequest(error);
     }
-    saveJson(productsPath, products);
+    fs.mkdirSync(productsDir, { recursive: true });
+    const currentFiles = fs.readdirSync(productsDir).filter(f => f.endsWith('.json'));
+    const newProductIds = products.map(p => p.id);
+    for (const file of currentFiles) {
+      if (!newProductIds.includes(file.replace('.json', ''))) {
+        fs.unlinkSync(path.join(productsDir, file));
+      }
+    }
+    for (const product of products) {
+      saveJson(path.join(productsDir, `${product.id}.json`), product);
+    }
+    if (fs.existsSync(productsPath)) fs.unlinkSync(productsPath);
     saveJson(configPath, config);
     return { ...readCatalog(), saved: true };
   });

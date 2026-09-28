@@ -49,12 +49,16 @@ async function main(): Promise<void> {
   const planned = await prepareSession(date, slot, config.intervalMinutes);
   Logger.info(`${id}: ${planned.length} products; ${config.intervalMinutes} minutes between submissions`);
 
+  const service = new ThreadsService();
+  await service.initPersistentBrowser(false);
+
   while (true) {
     const posts = currentPosts(date, slot);
     const next = nextSessionPost(posts);
     if (!next) {
       const failed = posts.filter(post => post.status === 'failed').length;
       Logger.info(`${id} complete: ${posts.length - failed} without reported error; ${failed} failed and skipped`);
+      await service.closeBrowser();
       return;
     }
     const due = nextDueTime(posts, next, config.intervalMinutes);
@@ -64,8 +68,7 @@ async function main(): Promise<void> {
     const result = await withPostingLock(async () => {
       const fresh = currentPosts(date, slot).find(post => post.id === next.id);
       if (!fresh || fresh.status !== 'pending') return fresh;
-      const service = new ThreadsService();
-      await service.postThread(fresh);
+      await service.postThread(fresh, false);
       return currentPosts(date, slot).find(post => post.id === next.id);
     });
     if (result?.status === 'failed') {
@@ -73,6 +76,7 @@ async function main(): Promise<void> {
       continue;
     }
     if (!result || (result.status !== 'needs_review' && result.status !== 'published')) {
+      await service.closeBrowser();
       throw new Error(`${id} stopped at ${next.id} (${result?.status ?? 'missing'}). Check data/posts.json before resuming.`);
     }
   }
