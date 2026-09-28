@@ -72,8 +72,6 @@ export function validateProducts(value: unknown, rootDir: string = process.cwd()
         throw new Error(`Content ${content.id} needs text and an images array`);
       }
       if (!content.text.trim() && !content.images.length) throw new Error(`Content ${content.id} is empty`);
-      const emojiIssue = describeUnsupportedEmoji(content.text);
-      if (emojiIssue) throw new Error(`Content ${content.id}: ${emojiIssue}`);
       if (content.topic != null && (typeof content.topic !== 'string' || !content.topic.trim() || content.topic !== content.topic.trim())) {
         throw new Error(`Content ${content.id} topic must be a nonempty label without surrounding spaces`);
       }
@@ -136,6 +134,8 @@ export function planSession(
       });
 
   return content.map((item, order) => {
+    const emojiIssue = describeUnsupportedEmoji(item.text);
+    if (emojiIssue) throw new Error(`Content ${item.contentId}: ${emojiIssue}`);
     resolveExistingPostImages(item.images, rootDir);
     return {
       id: `run-${date}-${slot}-${item.productId}`,

@@ -57,6 +57,12 @@ test('editor saves products and media, previews the session, and rejects stale s
       payload: { products: [{ ...products[0], contents: [{ ...products[0].contents[0], images: ['data/media/product-a/missing.png'] }] }], config, revision: save.json().revision }
     });
     assert.equal(missingImage.statusCode, 400);
+    const unsupportedEmoji = await app.inject({
+      method: 'PUT', url: '/api/catalog',
+      payload: { products: [{ ...products[0], contents: [{ ...products[0].contents[0], text: 'Emoji lỗi 🫩' }] }], config, revision: save.json().revision }
+    });
+    assert.equal(unsupportedEmoji.statusCode, 400);
+    assert.match(unsupportedEmoji.json().error, /U\+1FAE9/);
   } finally {
     await app.close();
     const tempRoot = path.resolve(os.tmpdir());

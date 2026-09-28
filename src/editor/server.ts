@@ -8,6 +8,7 @@ import fastifyStatic from '@fastify/static';
 import { Post, SessionSlot } from '../posts/post.types';
 import { resolveExistingPostImages, validatePosts } from '../posts/post.repository';
 import { dateInTimeZone, planSession, postsForSession, validateProducts, validateSessionConfig } from '../session/session.plan';
+import { describeUnsupportedEmoji } from '../emoji/compatibility';
 
 const imageMime: Record<string, string> = {
   'image/jpeg': '.jpg',
@@ -90,7 +91,11 @@ export function createEditorServer(rootDir: string = process.cwd(), serveUi = tr
     try {
       products = validateProducts(body.products, rootDir, true);
       config = validateSessionConfig(body.config);
-      for (const product of products) for (const content of product.contents) resolveExistingPostImages(content.images, rootDir);
+      for (const product of products) for (const content of product.contents) {
+        const emojiIssue = describeUnsupportedEmoji(content.text);
+        if (emojiIssue) throw new Error(`Content ${content.id}: ${emojiIssue}`);
+        resolveExistingPostImages(content.images, rootDir);
+      }
     } catch (error) {
       throw badRequest(error);
     }

@@ -64,3 +64,9 @@ test('a failed middle product does not erase the gap after the last submission',
   assert.equal(nextSessionPost(posts)?.id, posts[2].id);
   assert.equal(new Date(nextDueTime(posts, posts[2], 10)).toISOString(), '2026-09-23T01:25:00.000Z');
 });
+
+test('session planning rejects emoji that render as missing glyphs on this browser', () => {
+  const incompatible = structuredClone(products);
+  incompatible[0].contents[0].text = 'Emoji lỗi 🫩';
+  assert.throws(() => planSession([], incompatible, '2026-09-23', 'morning', start, 10), /U\+1FAE9/);
+});
