@@ -1,0 +1,19 @@
+{
+  "id": "copy-nuis07-02-squishy-cheese-8cm",
+  "name": "Squishy Cheese 8cm",
+  "contents": [
+    {
+      "id": "v1",
+      "text": "📦 GIỮA TUẦN NÀY HÀNG VỀ – NHẬN ORDER NGAY!\nAi mê squishy thì tranh thủ chốt đơn nha\n🧀 Squishy Cheese size 8cm\n📍Shop online Da Nang",
+      "images": [
+        "data/media/copy-nuis07-02-squishy-cheese-8cm/84c2020c980513a1276f31d8.jpg"
+      ],
+      "topic": "squishy",
+      "importedFrom": {
+        "account": "nuis07.studio",
+        "postIndex": 1
+      }
+    }
+  ],
+  "order": 0
+}

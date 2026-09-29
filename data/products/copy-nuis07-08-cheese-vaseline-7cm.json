@@ -1,0 +1,21 @@
+{
+  "id": "copy-nuis07-08-cheese-vaseline-7cm",
+  "name": "Cheese vaseline 7cm",
+  "contents": [
+    {
+      "id": "v1",
+      "text": "Cheese vaseline 7cm mềm ơi là mềm đây ạ\n📍 Shop online Da Nang",
+      "images": [
+        "data/media/copy-nuis07-08-cheese-vaseline-7cm/3b34ea0022c314b462cf415a.jpg",
+        "data/media/copy-nuis07-08-cheese-vaseline-7cm/0af692e259e3d205b4b6087c.jpg",
+        "data/media/copy-nuis07-08-cheese-vaseline-7cm/7a973a301320f70f8cc4aedf.jpg"
+      ],
+      "topic": "squishy",
+      "importedFrom": {
+        "account": "nuis07.studio",
+        "postIndex": 7
+      }
+    }
+  ],
+  "order": 5
+}

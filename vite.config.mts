@@ -5,5 +5,14 @@ import { fileURLToPath } from 'url';
 export default defineConfig({
   root: fileURLToPath(new URL('./ui/', import.meta.url)),
   plugins: [react()],
-  build: { outDir: 'dist', emptyOutDir: true }
+  build: { 
+    outDir: 'dist', 
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./ui/index.html', import.meta.url)),
+        delivery: fileURLToPath(new URL('./ui/delivery.html', import.meta.url))
+      }
+    }
+  }
 });

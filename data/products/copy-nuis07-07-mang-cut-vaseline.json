@@ -1,0 +1,20 @@
+{
+  "id": "copy-nuis07-07-mang-cut-vaseline",
+  "name": "Măng cụt vaseline",
+  "contents": [
+    {
+      "id": "v1",
+      "text": "Toai gom luôn em măng cụt vaseline\n🏷️ 50.000₫ 1 em\nMua càng nhiều sale càng nhiều nha mấy mommm\n📍Shop online Da Nang",
+      "images": [
+        "data/media/copy-nuis07-07-mang-cut-vaseline/ccc38970e93982bd4aba42dc.jpg",
+        "data/media/copy-nuis07-07-mang-cut-vaseline/9db724844622bf5a43b17b49.jpg"
+      ],
+      "topic": "squishy",
+      "importedFrom": {
+        "account": "nuis07.studio",
+        "postIndex": 6
+      }
+    }
+  ],
+  "order": 4
+}

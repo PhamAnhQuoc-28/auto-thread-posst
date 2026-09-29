@@ -3,7 +3,7 @@ import ContentEditor from './ContentEditor';
 import { describeUnsupportedEmoji } from '../../src/emoji/compatibility';
 
 type Content = { id: string; text: string; images: string[]; topic?: string | null };
-type Product = { id: string; name: string; contents: Content[] };
+type Product = { id: string; name: string; order?: number; contents: Content[] };
 type Config = { intervalMinutes: number; timeZone: string };
 type Catalog = { products: Product[]; config: Config; revision: string };
 type PreviewPost = {

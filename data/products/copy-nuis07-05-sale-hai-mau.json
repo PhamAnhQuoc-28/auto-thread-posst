@@ -1,0 +1,20 @@
+{
+  "id": "copy-nuis07-05-sale-hai-mau",
+  "name": "Sale hai mẫu squishy",
+  "contents": [
+    {
+      "id": "v1",
+      "text": "Hôm nay toai vui quá\nTôi sale 2 mẫu này\n🏷️20.000₫\nSale tới hết CN 27/9 về lại 25.000₫ nhen\n📍Shop online Da Nang",
+      "images": [
+        "data/media/copy-nuis07-05-sale-hai-mau/7fc8243c1488311756f36100.jpg",
+        "data/media/copy-nuis07-05-sale-hai-mau/01a815fbd38ead0cceb03ee8.jpg"
+      ],
+      "topic": "viral",
+      "importedFrom": {
+        "account": "nuis07.studio",
+        "postIndex": 4
+      }
+    }
+  ],
+  "order": 2
+}

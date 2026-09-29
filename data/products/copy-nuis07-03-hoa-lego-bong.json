@@ -1,0 +1,19 @@
+{
+  "id": "copy-nuis07-03-hoa-lego-bong",
+  "name": "Hoa Lego 15.000đ",
+  "contents": [
+    {
+      "id": "v1",
+      "text": "Em đang sẵn mấy mẫu hoa lego này ạ\n15.000₫ 1 bông\n📍Shop online Da Nang",
+      "images": [
+        "data/media/copy-nuis07-03-hoa-lego-bong/31f5fb8a1f1f8739a70a9ff3.jpg"
+      ],
+      "topic": "viral",
+      "importedFrom": {
+        "account": "nuis07.studio",
+        "postIndex": 2
+      }
+    }
+  ],
+  "order": 1
+}

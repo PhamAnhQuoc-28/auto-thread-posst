@@ -108,5 +108,165 @@
       "contentId": "v1",
       "order": 4
     }
+  },
+  {
+    "id": "run-2026-09-29-morning-copy-nuis07-02-squishy-cheese-8cm",
+    "text": "📦 GIỮA TUẦN NÀY HÀNG VỀ – NHẬN ORDER NGAY!\nAi mê squishy thì tranh thủ chốt đơn nha\n🧀 Squishy Cheese size 8cm\n📍Shop online Da Nang",
+    "images": [
+      "data/media/copy-nuis07-02-squishy-cheese-8cm/84c2020c980513a1276f31d8.jpg"
+    ],
+    "topic": "squishy",
+    "scheduledAt": "2026-09-29T05:20:24.785Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-29T05:20:24.785Z",
+    "submittedAt": "2026-09-29T05:20:43.431Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-29",
+      "slot": "morning",
+      "dayNumber": 2,
+      "productId": "copy-nuis07-02-squishy-cheese-8cm",
+      "contentId": "v1",
+      "order": 0
+    }
+  },
+  {
+    "id": "run-2026-09-29-morning-copy-nuis07-03-hoa-lego-bong",
+    "text": "Em đang sẵn mấy mẫu hoa lego này ạ\n15.000₫ 1 bông\n📍Shop online Da Nang",
+    "images": [
+      "data/media/copy-nuis07-03-hoa-lego-bong/31f5fb8a1f1f8739a70a9ff3.jpg"
+    ],
+    "topic": "viral",
+    "scheduledAt": "2026-09-29T05:20:54.785Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-29T05:20:24.785Z",
+    "submittedAt": "2026-09-29T05:21:28.306Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-29",
+      "slot": "morning",
+      "dayNumber": 2,
+      "productId": "copy-nuis07-03-hoa-lego-bong",
+      "contentId": "v1",
+      "order": 1
+    }
+  },
+  {
+    "id": "run-2026-09-29-morning-copy-nuis07-05-sale-hai-mau",
+    "text": "Hôm nay toai vui quá\nTôi sale 2 mẫu này\n🏷️20.000₫\nSale tới hết CN 27/9 về lại 25.000₫ nhen\n📍Shop online Da Nang",
+    "images": [
+      "data/media/copy-nuis07-05-sale-hai-mau/7fc8243c1488311756f36100.jpg",
+      "data/media/copy-nuis07-05-sale-hai-mau/01a815fbd38ead0cceb03ee8.jpg"
+    ],
+    "topic": "viral",
+    "scheduledAt": "2026-09-29T05:21:24.785Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-29T05:20:24.785Z",
+    "submittedAt": "2026-09-29T05:22:13.997Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-29",
+      "slot": "morning",
+      "dayNumber": 2,
+      "productId": "copy-nuis07-05-sale-hai-mau",
+      "contentId": "v1",
+      "order": 2
+    }
+  },
+  {
+    "id": "run-2026-09-29-morning-copy-nuis07-06-squishy-butter-vaseline-14cm",
+    "text": "Squishy butter vaseline 14cm\n📍Shop online Da Nang",
+    "images": [
+      "data/media/copy-nuis07-06-squishy-butter-vaseline-14cm/df888c92f3e434ca12232706.jpg"
+    ],
+    "topic": null,
+    "scheduledAt": "2026-09-29T05:21:54.785Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-29T05:20:24.785Z",
+    "submittedAt": "2026-09-29T05:22:59.502Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-29",
+      "slot": "morning",
+      "dayNumber": 2,
+      "productId": "copy-nuis07-06-squishy-butter-vaseline-14cm",
+      "contentId": "v1",
+      "order": 3
+    }
+  },
+  {
+    "id": "run-2026-09-29-morning-copy-nuis07-07-mang-cut-vaseline",
+    "text": "Toai gom luôn em măng cụt vaseline\n🏷️ 50.000₫ 1 em\nMua càng nhiều sale càng nhiều nha mấy mommm\n📍Shop online Da Nang",
+    "images": [
+      "data/media/copy-nuis07-07-mang-cut-vaseline/ccc38970e93982bd4aba42dc.jpg",
+      "data/media/copy-nuis07-07-mang-cut-vaseline/9db724844622bf5a43b17b49.jpg"
+    ],
+    "topic": "squishy",
+    "scheduledAt": "2026-09-29T05:22:24.785Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-29T05:20:24.785Z",
+    "submittedAt": "2026-09-29T05:23:46.144Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-29",
+      "slot": "morning",
+      "dayNumber": 2,
+      "productId": "copy-nuis07-07-mang-cut-vaseline",
+      "contentId": "v1",
+      "order": 4
+    }
+  },
+  {
+    "id": "run-2026-09-29-morning-copy-nuis07-08-cheese-vaseline-7cm",
+    "text": "Cheese vaseline 7cm mềm ơi là mềm đây ạ\n📍 Shop online Da Nang",
+    "images": [
+      "data/media/copy-nuis07-08-cheese-vaseline-7cm/3b34ea0022c314b462cf415a.jpg",
+      "data/media/copy-nuis07-08-cheese-vaseline-7cm/0af692e259e3d205b4b6087c.jpg",
+      "data/media/copy-nuis07-08-cheese-vaseline-7cm/7a973a301320f70f8cc4aedf.jpg"
+    ],
+    "topic": "squishy",
+    "scheduledAt": "2026-09-29T05:22:54.785Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-29T05:20:24.785Z",
+    "submittedAt": "2026-09-29T05:24:30.057Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-29",
+      "slot": "morning",
+      "dayNumber": 2,
+      "productId": "copy-nuis07-08-cheese-vaseline-7cm",
+      "contentId": "v1",
+      "order": 5
+    }
+  },
+  {
+    "id": "run-2026-09-29-morning-copy-nuis07-10-thanh-butter-vaseline-14cm",
+    "text": "Khách uii em lại lên mẫu mới đâyyy. Lấy gì nhắn em nhé\n[ Thanh butter vaseline 14cm ]\n📍Shop online Da Nang",
+    "images": [
+      "data/media/copy-nuis07-10-thanh-butter-vaseline-14cm/0c4a03f0f9e80a5289a7cf74.jpg",
+      "data/media/copy-nuis07-10-thanh-butter-vaseline-14cm/fc0d257cb839f92044ace6c0.jpg",
+      "data/media/copy-nuis07-10-thanh-butter-vaseline-14cm/647a1cc475550ec4f58bc88a.jpg"
+    ],
+    "topic": "squishy",
+    "scheduledAt": "2026-09-29T05:23:24.785Z",
+    "status": "needs_review",
+    "createdAt": "2026-09-29T05:20:24.785Z",
+    "submittedAt": "2026-09-29T05:25:15.790Z",
+    "publishedAt": null,
+    "error": "Post button was clicked, but publication has not been verified.",
+    "session": {
+      "date": "2026-09-29",
+      "slot": "morning",
+      "dayNumber": 2,
+      "productId": "copy-nuis07-10-thanh-butter-vaseline-14cm",
+      "contentId": "v1",
+      "order": 6
+    }
   }
 ]

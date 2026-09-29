@@ -9,11 +9,13 @@ export interface ProductContent {
   text: string;
   images: string[];
   topic?: string | null;
+  importedFrom?: { account: string; postIndex: number };
 }
 
 export interface Product {
   id: string;
   name: string;
+  order?: number;
   contents: ProductContent[];
 }
 
@@ -48,7 +50,7 @@ export function loadProducts(): Product[] {
   const productsDir = path.resolve(process.cwd(), 'data', 'products');
   let arr: any[] = [];
   if (fs.existsSync(productsDir)) {
-    const files = fs.readdirSync(productsDir).filter(f => f.endsWith('.json'));
+    const files = fs.readdirSync(productsDir).filter(f => f.endsWith('.json')).sort();
     for (const file of files) {
       arr.push(JSON.parse(fs.readFileSync(path.join(productsDir, file), 'utf-8')));
     }
@@ -56,7 +58,7 @@ export function loadProducts(): Product[] {
     const productsPath = path.resolve(process.cwd(), 'data', 'products.json');
     if (fs.existsSync(productsPath)) arr = JSON.parse(fs.readFileSync(productsPath, 'utf-8'));
   }
-  return validateProducts(arr);
+  return validateProducts(arr).sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) || a.id.localeCompare(b.id));
 }
 
 export function validateProducts(value: unknown, rootDir: string = process.cwd(), allowEmpty = false): Product[] {
@@ -70,6 +72,7 @@ export function validateProducts(value: unknown, rootDir: string = process.cwd()
     }
     ids.add(product.id);
     if (typeof product.name !== 'string' || !product.name.trim()) throw new Error(`Product ${product.id} needs a name`);
+    if (product.order !== undefined && (!Number.isInteger(product.order) || product.order < 0)) throw new Error(`Product ${product.id} has invalid order`);
     if (!Array.isArray(product.contents) || !product.contents.length) throw new Error(`Product ${product.id} needs content variants`);
     const contentIds = new Set<string>();
     for (const content of product.contents) {

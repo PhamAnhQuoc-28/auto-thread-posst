@@ -38,7 +38,7 @@ test('editor saves products and media, previews the session, and rejects stale s
     const config = { intervalMinutes: 10, timeZone: 'Asia/Ho_Chi_Minh' };
     const save = await app.inject({ method: 'PUT', url: '/api/catalog', payload: { products, config, revision } });
     assert.equal(save.statusCode, 200, save.body);
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'data', 'products.json'), 'utf-8')), products);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'data', 'products', 'product-a.json'), 'utf-8')), { ...products[0], order: 0 });
 
     const image = await app.inject({ method: 'GET', url: `/api/media/${imagePath.slice('data/media/'.length)}` });
     assert.equal(image.statusCode, 200);

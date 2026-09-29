@@ -58,7 +58,7 @@ export function createEditorServer(rootDir: string = process.cwd(), serveUi = tr
     let rawProductsArr: any[] = [];
     let hashContent = '';
     if (fs.existsSync(productsDir)) {
-      const files = fs.readdirSync(productsDir).filter(f => f.endsWith('.json'));
+      const files = fs.readdirSync(productsDir).filter(f => f.endsWith('.json')).sort();
       for (const file of files) {
         const content = fs.readFileSync(path.join(productsDir, file), 'utf-8');
         rawProductsArr.push(JSON.parse(content));
@@ -70,7 +70,8 @@ export function createEditorServer(rootDir: string = process.cwd(), serveUi = tr
       hashContent = content;
     }
     const rawConfig = fs.existsSync(configPath) ? fs.readFileSync(configPath, 'utf-8') : '{"intervalMinutes":10,"timeZone":"Asia/Ho_Chi_Minh"}\n';
-    const products = validateProducts(rawProductsArr, rootDir, true);
+    const products = validateProducts(rawProductsArr, rootDir, true)
+      .sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) || a.id.localeCompare(b.id));
     const config = validateSessionConfig(JSON.parse(rawConfig));
     const revision = crypto.createHash('sha256').update(hashContent).update('\n').update(rawConfig).digest('hex');
     return { products, config, revision };
@@ -105,6 +106,7 @@ export function createEditorServer(rootDir: string = process.cwd(), serveUi = tr
     let config;
     try {
       products = validateProducts(body.products, rootDir, true);
+      products.forEach((product, index) => { product.order = index; });
       config = validateSessionConfig(body.config);
       for (const product of products) for (const content of product.contents) {
         const emojiIssue = describeUnsupportedEmoji(content.text);
