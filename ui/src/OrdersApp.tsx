@@ -42,9 +42,16 @@ export default function OrdersApp() {
   const [filterPlatform, setFilterPlatform] = useState('all');
   const [filterDate, setFilterDate] = useState('');
   const [showDeleted, setShowDeleted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Form states
   const [form, setForm] = useState(defaultForm);
+
+  // Reset trang về 1 khi đổi bộ lọc hoặc đổi số lượng hiển thị
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterStatus, filterPlatform, filterDate, showDeleted, itemsPerPage]);
 
   useEffect(() => {
     if (activeUrl && activeKey) {
@@ -210,6 +217,9 @@ export default function OrdersApp() {
     
     return matchesSearch && matchesStatus && matchesPlatform && matchesDate;
   });
+
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
+  const paginatedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="orders-container">
@@ -392,7 +402,7 @@ export default function OrdersApp() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredOrders.map((order: any) => (
+                  {paginatedOrders.map((order: any) => (
                     <tr key={order.id} style={{ opacity: order.is_deleted ? 0.7 : 1 }}>
                       <td>
                         <strong>{order.customer_name}</strong>
@@ -448,6 +458,42 @@ export default function OrdersApp() {
                   ))}
                 </tbody>
               </table>
+            )}
+            
+            {filteredOrders.length > 0 && (
+              <div className="pagination" style={{ flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: 'auto' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#6b7280' }}>Hiển thị:</label>
+                  <select 
+                    value={itemsPerPage} 
+                    onChange={e => setItemsPerPage(Number(e.target.value))}
+                    style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #d1d5db', outline: 'none', cursor: 'pointer', fontWeight: 500, color: '#374151' }}
+                  >
+                    <option value={10}>10 đơn / trang</option>
+                    <option value={20}>20 đơn / trang</option>
+                    <option value={50}>50 đơn / trang</option>
+                    <option value={100}>100 đơn / trang</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <button 
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                    disabled={currentPage === 1}
+                    className="btn-page"
+                  >
+                    &lt; Trước
+                  </button>
+                  <span className="page-info">Trang {currentPage} / {totalPages}</span>
+                  <button 
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                    disabled={currentPage === totalPages}
+                    className="btn-page"
+                  >
+                    Sau &gt;
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
