@@ -1,0 +1,457 @@
+import React, { useState, useEffect } from 'react';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+interface Order {
+  id: string;
+  created_at: string;
+  customer_name: string;
+  phone: string;
+  address: string;
+  product: string;
+  total_amount: number;
+  deposit: number;
+  shipping_fee: number;
+  cod: number;
+  shipping_unit: string;
+  platform: string;
+  status: string;
+  notes: string;
+  delivery_date: string | null;
+}
+
+const defaultForm = {
+  customer_name: '', phone: '', address: '', product: '', 
+  total_amount: 0, deposit: 0, shipping_fee: 0, cod: 0,
+  shipping_unit: 'SPX', platform: 'Threads',
+  status: 'pending', notes: '', delivery_date: ''
+};
+
+export default function OrdersApp() {
+  const activeUrl = import.meta.env.VITE_SUPABASE_URL || '';
+  const activeKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+
+  // Search and Filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPlatform, setFilterPlatform] = useState('all');
+  const [filterDate, setFilterDate] = useState('');
+  const [showDeleted, setShowDeleted] = useState(false);
+
+  // Form states
+  const [form, setForm] = useState(defaultForm);
+
+  useEffect(() => {
+    if (activeUrl && activeKey) {
+      try {
+        const client = createClient(activeUrl, activeKey);
+        setSupabase(client);
+      } catch (err) {
+        alert("Thông tin Supabase trong file .env không hợp lệ!");
+        setSupabase(null);
+      }
+    } else {
+      setSupabase(null);
+    }
+  }, [activeUrl, activeKey]);
+
+  useEffect(() => {
+    if (supabase) {
+      fetchOrders();
+    }
+  }, [supabase]);
+
+  // Tự động tính COD khi tiền hàng, cọc, phí ship thay đổi
+  useEffect(() => {
+    const calcCod = Math.max(0, form.total_amount - form.deposit + form.shipping_fee);
+    setForm(prev => ({ ...prev, cod: calcCod }));
+  }, [form.total_amount, form.deposit, form.shipping_fee]);
+
+  const fetchOrders = async () => {
+    if (!supabase) return;
+    setLoading(true);
+    // Lấy TẤT CẢ đơn hàng để dễ bề phân loại Thùng rác / Đang active
+    const { data, error } = await supabase.from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+      
+    if (error) {
+      alert("Lỗi tải đơn hàng: " + error.message);
+    } else {
+      setOrders(data as any[]);
+    }
+    setLoading(false);
+  };
+
+  const handleOpenAdd = () => {
+    setForm(defaultForm);
+    setEditId(null);
+    setShowForm(true);
+  };
+
+  const handleOpenEdit = (order: any) => {
+    setForm({
+      customer_name: order.customer_name || '',
+      phone: order.phone || '',
+      address: order.address || '',
+      product: order.product || '',
+      total_amount: order.total_amount || 0,
+      deposit: order.deposit || 0,
+      shipping_fee: order.shipping_fee || 0,
+      cod: order.cod || 0,
+      shipping_unit: order.shipping_unit || 'SPX',
+      platform: order.platform || 'Threads',
+      status: order.status || 'pending',
+      notes: order.notes || '',
+      delivery_date: order.delivery_date || ''
+    });
+    setEditId(order.id);
+    setShowForm(true);
+  };
+
+  const handleSaveOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+    
+    setLoading(true);
+    // Xử lý ngày rỗng
+    const submitData = { ...form };
+    if (!submitData.delivery_date) {
+      delete (submitData as any).delivery_date;
+    }
+
+    if (editId) {
+      const { error } = await supabase.from('orders').update(submitData).eq('id', editId);
+      if (error) alert("Lỗi cập nhật đơn hàng: " + error.message);
+      else finishSave();
+    } else {
+      const { error } = await supabase.from('orders').insert([submitData]);
+      if (error) alert("Lỗi lưu đơn mới: " + error.message);
+      else finishSave();
+    }
+  };
+
+  const finishSave = () => {
+    setLoading(false);
+    setShowForm(false);
+    setForm(defaultForm);
+    setEditId(null);
+    fetchOrders();
+  };
+
+  const handleUpdateStatus = async (id: string, newStatus: string) => {
+    if (!supabase) return;
+    setLoading(true);
+    const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', id);
+    setLoading(false);
+    
+    if (error) {
+      alert("Lỗi cập nhật trạng thái: " + error.message);
+    } else {
+      fetchOrders();
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!supabase) return;
+    if (window.confirm('Bạn có chắc chắn muốn XÓA đơn hàng này?\n(Đây là xóa mềm, có thể khôi phục trong Thùng Rác)')) {
+      setLoading(true);
+      const { error } = await supabase.from('orders').update({ is_deleted: true }).eq('id', id);
+      setLoading(false);
+      
+      if (error) {
+        alert("Lỗi xóa đơn hàng: " + error.message);
+      } else {
+        fetchOrders();
+      }
+    }
+  };
+
+  const handleRestore = async (id: string) => {
+    if (!supabase) return;
+    setLoading(true);
+    const { error } = await supabase.from('orders').update({ is_deleted: false }).eq('id', id);
+    setLoading(false);
+    if (error) {
+      alert("Lỗi khôi phục đơn hàng: " + error.message);
+    } else {
+      fetchOrders();
+    }
+  };
+
+  function removeAccents(str: string) {
+    return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
+  }
+
+  const filteredOrders = orders.filter((order: any) => {
+    // Nếu đang xem Thùng rác, chỉ hiện đơn bị xóa. Ngược lại chỉ hiện đơn chưa bị xóa.
+    if (showDeleted) {
+      if (order.is_deleted !== true) return false;
+    } else {
+      if (order.is_deleted === true) return false;
+    }
+
+    const normalizedQuery = removeAccents(searchQuery);
+    const searchWords = normalizedQuery.split(' ').filter(Boolean);
+    
+    const searchTarget = removeAccents(
+      `${order.customer_name} ${order.phone || ''} ${order.address || ''} ${order.product || ''} ${order.notes || ''}`
+    );
+    
+    const matchesSearch = searchWords.length === 0 || searchWords.every(word => searchTarget.includes(word));
+    const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
+    const matchesPlatform = filterPlatform === 'all' || order.platform === filterPlatform;
+    const matchesDate = !filterDate || order.delivery_date === filterDate;
+    
+    return matchesSearch && matchesStatus && matchesPlatform && matchesDate;
+  });
+
+  return (
+    <div className="orders-container">
+      <div className="header-glass">
+        <h1>📦 Quản lý Đơn Hàng</h1>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Ghi nhận và tracking đơn hàng qua Supabase</p>
+        
+        {!activeUrl || !activeKey ? (
+          <div style={{ padding: '2rem', color: '#b91c1c', background: '#fee2e2', borderRadius: '8px' }}>
+            <strong>Chưa cấu hình Supabase!</strong><br />
+            Hãy tạo file <code>.env</code> ở thư mục gốc và thêm <code>VITE_SUPABASE_URL</code> và <code>VITE_SUPABASE_ANON_KEY</code>, sau đó chạy lại lệnh build.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <button className="btn-primary" onClick={handleOpenAdd}>➕ Thêm Đơn Mới</button>
+            <button className="btn-secondary" onClick={fetchOrders} disabled={loading}>
+              {loading ? 'Đang tải...' : '🔄 Làm Mới'}
+            </button>
+            <button 
+              className={`btn-secondary ${showDeleted ? 'active-trash' : ''}`} 
+              onClick={() => setShowDeleted(!showDeleted)}
+              title={showDeleted ? 'Quay lại danh sách' : 'Xem Thùng rác'}
+            >
+              {showDeleted ? '🔙 Quay lại' : '🗑️ Thùng Rác'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {activeUrl && activeKey && (
+        <div className="content-grid">
+          
+          <div className="filters-container">
+            <input 
+              type="text" 
+              placeholder="🔍 Tìm tên khách, SĐT, sản phẩm..." 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="input-field flex-2"
+            />
+            <input 
+              type="date" 
+              value={filterDate}
+              onChange={e => setFilterDate(e.target.value)}
+              className="input-field flex-1"
+              title="Lọc theo ngày giao dự kiến"
+            />
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="input-field flex-1">
+              <option value="all">Tất cả Trạng Thái</option>
+              <option value="pending">Chờ Giao</option>
+              <option value="delivering">Đang Giao</option>
+              <option value="completed">Hoàn Thành</option>
+              <option value="cancelled">Đã Hủy</option>
+            </select>
+            <select value={filterPlatform} onChange={e => setFilterPlatform(e.target.value)} className="input-field flex-1">
+              <option value="all">Tất cả Nguồn</option>
+              <option value="Threads">Threads</option>
+              <option value="FB">Facebook</option>
+              <option value="IG">Instagram</option>
+              <option value="Tiktok">Tiktok</option>
+              <option value="Khác">Khác</option>
+            </select>
+            {filterDate && (
+              <button 
+                className="btn-secondary" 
+                style={{padding: '0.5rem', borderRadius: '8px', border: 'none', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold'}} 
+                onClick={() => setFilterDate('')}
+                title="Xóa bộ lọc ngày"
+              >
+                ✕ Hủy ngày
+              </button>
+            )}
+          </div>
+
+          {showForm && (
+            <div className="modal-overlay">
+              <div className="modal-content large-modal">
+                <h2>{editId ? 'Sửa Đơn Hàng' : 'Tạo Đơn Hàng Mới'}</h2>
+                <form onSubmit={handleSaveOrder} className="order-form">
+                  <div className="form-row">
+                    <div className="form-group flex-2">
+                      <label>Tên Khách Hàng (*)</label>
+                      <input required type="text" value={form.customer_name} onChange={e => setForm({...form, customer_name: e.target.value})} />
+                    </div>
+                    <div className="form-group flex-1">
+                      <label>Số Điện Thoại</label>
+                      <input type="text" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} />
+                    </div>
+                    <div className="form-group flex-1">
+                      <label>Nguồn Khách</label>
+                      <select value={form.platform} onChange={e => setForm({...form, platform: e.target.value})}>
+                        <option value="Threads">Threads</option>
+                        <option value="FB">Facebook</option>
+                        <option value="IG">Instagram</option>
+                        <option value="Tiktok">Tiktok</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Địa Chỉ Giao Hàng</label>
+                    <input type="text" value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="VD: 137 Đặng Thái Thân, P. Thanh Vinh, Nghệ An" />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Danh sách Sản Phẩm (*)</label>
+                    <textarea required rows={3} value={form.product} onChange={e => setForm({...form, product: e.target.value})} placeholder="VD: 1 lạc giòn 50k&#10;1 cheese 8cm 85k&#10;1 măng cụt vsl 50k" />
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group flex-1">
+                      <label>Tiền Hàng (VNĐ)</label>
+                      <input type="number" value={form.total_amount || ''} onChange={e => setForm({...form, total_amount: Number(e.target.value)})} />
+                    </div>
+                    <div className="form-group flex-1">
+                      <label>Đã Cọc (VNĐ)</label>
+                      <input type="number" value={form.deposit || ''} onChange={e => setForm({...form, deposit: Number(e.target.value)})} />
+                    </div>
+                    <div className="form-group flex-1">
+                      <label>ĐVVC / Lấy hàng</label>
+                      <select value={form.shipping_unit} onChange={e => setForm({...form, shipping_unit: e.target.value})}>
+                        <option value="SPX">SPX</option>
+                        <option value="GHTK">GHTK</option>
+                        <option value="GHN">GHN</option>
+                        <option value="Viettel">Viettel Post</option>
+                        <option value="Tự Lấy">Lấy trực tiếp</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group flex-1">
+                      <label>Phí Ship (VNĐ)</label>
+                      <input type="number" value={form.shipping_fee || ''} onChange={e => setForm({...form, shipping_fee: Number(e.target.value)})} />
+                    </div>
+                    <div className="form-group flex-1 highlight-cod">
+                      <label>Cần Thu Hộ (COD)</label>
+                      <input type="number" value={form.cod || ''} onChange={e => setForm({...form, cod: Number(e.target.value)})} />
+                    </div>
+                    <div className="form-group flex-1">
+                      <label>Ngày Giao (Dự Kiến)</label>
+                      <input type="date" value={form.delivery_date} onChange={e => setForm({...form, delivery_date: e.target.value})} />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Ghi Chú</label>
+                    <textarea rows={2} value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} placeholder="Mai ghé công ty lấy tầm 10h, gửi c.Như..." />
+                  </div>
+
+                  <div className="modal-actions">
+                    <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>Hủy</button>
+                    <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Đang lưu...' : 'Lưu Đơn'}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <div className="orders-list">
+            {showDeleted && <div style={{background: '#fef2f2', color: '#b91c1c', padding: '1rem', textAlign: 'center', fontWeight: 'bold'}}>🗑️ Đang hiển thị các đơn hàng trong Thùng Rác</div>}
+            {filteredOrders.length === 0 && !loading && (
+              <div style={{ textAlign: 'center', padding: '3rem', color: '#6B7280' }}>
+                {showDeleted ? 'Thùng rác trống.' : 'Không tìm thấy đơn hàng nào phù hợp!'}
+              </div>
+            )}
+            
+            {filteredOrders.length > 0 && (
+              <table className="orders-table">
+                <thead>
+                  <tr>
+                    <th>Khách & Nguồn</th>
+                    <th>Địa Chỉ & SĐT</th>
+                    <th>Sản Phẩm</th>
+                    <th>Tài Chính</th>
+                    <th>Giao Hàng</th>
+                    <th>Hành Động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredOrders.map((order: any) => (
+                    <tr key={order.id} style={{ opacity: order.is_deleted ? 0.7 : 1 }}>
+                      <td>
+                        <strong>{order.customer_name}</strong>
+                        <div className="tag-platform">{order.platform}</div>
+                        <div className="order-date">{new Date(order.created_at).toLocaleDateString('vi-VN')}</div>
+                      </td>
+                      <td>
+                        <div style={{fontWeight: 500, color: '#374151'}}>{order.phone}</div>
+                        <div style={{fontSize: '0.85rem', color: '#6B7280', maxWidth: '200px'}}>{order.address}</div>
+                      </td>
+                      <td>
+                        <div style={{whiteSpace: 'pre-wrap', fontSize: '0.9rem', maxWidth: '250px'}}>{order.product}</div>
+                        {order.notes && <div className="order-notes">📝 {order.notes}</div>}
+                      </td>
+                      <td>
+                        <div className="finance-row"><span>Tiền hàng:</span> <strong>{order.total_amount?.toLocaleString('vi-VN')}đ</strong></div>
+                        <div className="finance-row" style={{color: '#059669'}}><span>Đã cọc:</span> <strong>{order.deposit?.toLocaleString('vi-VN')}đ</strong></div>
+                        <div className="finance-row"><span>Ship:</span> <strong>{order.shipping_fee?.toLocaleString('vi-VN')}đ</strong></div>
+                        <div className="finance-row highlight"><span>Cần thu (COD):</span> <strong>{order.cod?.toLocaleString('vi-VN')}đ</strong></div>
+                      </td>
+                      <td>
+                        <div className="tag-shipping">{order.shipping_unit}</div>
+                        {order.delivery_date && (
+                          <div style={{fontSize: '0.85rem', color: '#059669', marginTop: '6px', fontWeight: 500}}>
+                            📅 Giao: {new Date(order.delivery_date).toLocaleDateString('vi-VN')}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{minWidth: '120px'}}>
+                        <select 
+                          value={order.status} 
+                          onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
+                          className={`status-select status-${order.status}`}
+                          disabled={order.is_deleted}
+                        >
+                          <option value="pending">Chờ Giao</option>
+                          <option value="delivering">Đang Giao</option>
+                          <option value="completed">Hoàn Thành</option>
+                          <option value="cancelled">Đã Hủy</option>
+                        </select>
+                        <div style={{display: 'flex', gap: '8px', marginTop: '10px'}}>
+                          {order.is_deleted ? (
+                            <button onClick={() => handleRestore(order.id)} className="btn-action restore" title="Khôi phục">♻️ Khôi phục</button>
+                          ) : (
+                            <>
+                              <button onClick={() => handleOpenEdit(order)} className="btn-action edit" title="Sửa đơn">✏️ Sửa</button>
+                              <button onClick={() => handleDelete(order.id)} className="btn-action delete" title="Xóa đơn">🗑️ Xóa</button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
