@@ -241,6 +241,7 @@ export default function App() {
         <header className="topbar">
           <div><h2>Chuẩn bị bài đăng</h2></div>
           <div className="top-actions">
+            <button className="button secondary" style={{ border: '1px solid #10b981', color: '#059669', background: '#ecfdf5', fontWeight: 'bold' }} onClick={() => window.open('/orders.html', '_blank')} title="Mở trang Quản lý Đơn Hàng">📦 Quản lý Đơn</button>
             <span className={`save-state ${dirty ? 'unsaved' : ''}`}>{dirty ? '● Chưa lưu' : '✓ Đã lưu'}</span>
             <button className="button secondary" onClick={() => void load()} disabled={busy}>Tải lại</button>
             <button className="button primary" onClick={() => void save()} disabled={!dirty || busy || uploading || hasUnsupportedEmoji}>{busy ? 'Đang xử lý…' : 'Lưu dữ liệu'}</button>

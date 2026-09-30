@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { useJsApiLoader, GoogleMap, DirectionsRenderer, Marker, Autocomplete } from '@react-google-maps/api';
+
+const libraries: ("places")[] = ['places'];
 
 interface Order {
   id: string;
@@ -44,9 +47,43 @@ export default function OrdersApp() {
   const [showDeleted, setShowDeleted] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  
+  // Selection state
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
 
   // Form states
   const [form, setForm] = useState(defaultForm);
+
+  // Map states
+  const [showMap, setShowMap] = useState(false);
+  const mapApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || localStorage.getItem('orders_gmaps_api_key') || '';
+  const [homeAddress, setHomeAddress] = useState(() => localStorage.getItem('orders_home_address') || 'Hà Nội');
+  const [directionsResult, setDirectionsResult] = useState<google.maps.DirectionsResult | null>(null);
+  const [optimizedOrders, setOptimizedOrders] = useState<any[]>([]);
+  const [mapUrl, setMapUrl] = useState<string>('');
+  const [mapStatus, setMapStatus] = useState('');
+  const [isMapLoading, setIsMapLoading] = useState(false);
+
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: mapApiKey,
+    libraries
+  });
+
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+
+  const onLoadAutocomplete = (ac: google.maps.places.Autocomplete) => {
+    setAutocomplete(ac);
+  };
+
+  const onPlaceChanged = () => {
+    if (autocomplete !== null) {
+      const place = autocomplete.getPlace();
+      if (place && place.formatted_address) {
+        setForm(f => ({ ...f, address: place.formatted_address! }));
+      }
+    }
+  };
 
   // Reset trang về 1 khi đổi bộ lọc hoặc đổi số lượng hiển thị
   useEffect(() => {
@@ -66,6 +103,20 @@ export default function OrdersApp() {
       setSupabase(null);
     }
   }, [activeUrl, activeKey]);
+
+  // Tạo link Google Maps tự động khi lộ trình thay đổi
+  useEffect(() => {
+    if (optimizedOrders.length >= 2) {
+      // Sử dụng định dạng URL dạng đường dẫn (dir/lat,lon/lat,lon)
+      // Dùng tọa độ GPS TUYỆT ĐỐI (lat,lon) thay vì dùng chuỗi địa chỉ để tránh lỗi các ký tự đặc biệt
+      // Thêm data=!4m2!4m1!3e9 để gợi ý mở bằng chế độ Xe máy (nếu app hỗ trợ)
+      const places = optimizedOrders.map(o => `${o.lat},${o.lon}`).join('/');
+      const url = `https://www.google.com/maps/dir/${places}/data=!4m2!4m1!3e9`;
+      setMapUrl(url);
+    } else {
+      setMapUrl('');
+    }
+  }, [optimizedOrders]);
 
   useEffect(() => {
     if (supabase) {
@@ -218,8 +269,149 @@ export default function OrdersApp() {
     return matchesSearch && matchesStatus && matchesPlatform && matchesDate;
   });
 
+  const handleOptimizeRoute = () => {
+    if (!mapApiKey) {
+      alert('Vui lòng nhập Google Maps API Key trước!');
+      return;
+    }
+    
+    if (!homeAddress || homeAddress.trim() === '') {
+      alert('Vui lòng nhập "Địa chỉ xuất phát" (hoặc dùng nút 📍 để lấy vị trí hiện tại) trước khi tối ưu lộ trình!');
+      return;
+    }
+    
+    // Lấy các đơn hàng đã được tick chọn
+    const ordersToRoute = orders.filter((o: any) => selectedOrderIds.includes(o.id) && o.address && o.address.trim() !== '');
+    
+    if (ordersToRoute.length === 0) {
+      alert('Bạn chưa chọn đơn hàng nào (hoặc các đơn đã chọn không có địa chỉ hợp lệ)! Vui lòng tick chọn các đơn hàng trên bảng trước.');
+      return;
+    }
+    if (ordersToRoute.length > 24) {
+      alert(`Google Maps chỉ hỗ trợ tối đa 25 điểm (bao gồm 1 điểm xuất phát). Bạn đang chọn ${ordersToRoute.length} đơn. Vui lòng bỏ tick bớt.`);
+      return;
+    }
+
+    setIsMapLoading(true);
+    setMapStatus('Đang tìm đường đi tối ưu...');
+    setDirectionsResult(null);
+    setOptimizedOrders([]);
+
+    const directionsService = new window.google.maps.DirectionsService();
+    const origin = homeAddress;
+    const waypoints = ordersToRoute.map((o: any) => ({ location: o.address, stopover: true }));
+
+    directionsService.route({
+      origin: origin,
+      destination: origin, // Về lại nhà
+      waypoints: waypoints,
+      optimizeWaypoints: true,
+      travelMode: 'TWO_WHEELER' as google.maps.TravelMode,
+    }, (result, status) => {
+      setIsMapLoading(false);
+      if (status === window.google.maps.DirectionsStatus.OK && result) {
+        setDirectionsResult(result);
+        const order = result.routes[0].waypoint_order;
+        const legs = result.routes[0].legs;
+        
+        const ordered = [{
+          id: 'home',
+          customer_name: 'Nhà / Điểm Xuất Phát',
+          address: origin,
+          product: '',
+          lat: legs[0].start_location.lat(),
+          lon: legs[0].start_location.lng()
+        }];
+        
+        order.forEach((index: number, i: number) => {
+          ordered.push({
+            ...ordersToRoute[index],
+            lat: legs[i].end_location.lat(),
+            lon: legs[i].end_location.lng()
+          });
+        });
+        
+        setOptimizedOrders(ordered);
+        setMapStatus('Hoàn tất tối ưu!');
+      } else {
+        setMapStatus('');
+        alert(`Lỗi từ Google Maps: ${status}. Vui lòng kiểm tra địa chỉ hoặc API Key.`);
+      }
+    });
+  };
+
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Trình duyệt của bạn không hỗ trợ lấy vị trí (GPS).');
+      return;
+    }
+    
+    setIsMapLoading(true);
+    setMapStatus('Đang lấy vị trí hiện tại...');
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        // Dùng Geocoder của Google Maps để dịch tọa độ sang địa chỉ
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+          setIsMapLoading(false);
+          if (status === 'OK' && results && results[0]) {
+            const address = results[0].formatted_address;
+            setHomeAddress(address);
+            localStorage.setItem('orders_home_address', address);
+            setMapStatus('Đã lấy được vị trí hiện tại!');
+            setTimeout(() => setMapStatus(''), 3000);
+          } else {
+            // Nếu không dịch được, dùng luôn tọa độ làm string
+            const coordStr = `${lat}, ${lng}`;
+            setHomeAddress(coordStr);
+            localStorage.setItem('orders_home_address', coordStr);
+            setMapStatus('Đã lấy tọa độ (không dịch được tên đường).');
+            setTimeout(() => setMapStatus(''), 3000);
+          }
+        });
+      },
+      (error) => {
+        setIsMapLoading(false);
+        setMapStatus('');
+        // Phân tích mã lỗi rõ ràng hơn
+        let errorStr = '';
+        if (error.code === error.PERMISSION_DENIED) errorStr = 'Trình duyệt hoặc HĐH từ chối quyền (hoặc không lấy được tín hiệu GPS).';
+        else if (error.code === error.POSITION_UNAVAILABLE) errorStr = 'Không thể xác định vị trí hiện tại.';
+        else if (error.code === error.TIMEOUT) errorStr = 'Quá thời gian lấy vị trí.';
+        else errorStr = error.message;
+        
+        alert(`Lỗi lấy vị trí: ${errorStr}\n\n(Vì bạn đang dùng Máy tính, bạn có thể tự nhập tay địa chỉ kho hàng vào ô "Địa chỉ xuất phát" để dùng luôn nhé!)`);
+      },
+      // Tắt enableHighAccuracy để PC có thể dùng vị trí dựa trên mạng (IP) thay vì ép dùng phần cứng GPS
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage) || 1;
   const paginatedOrders = filteredOrders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      const paginatedIds = paginatedOrders.map((o: any) => o.id);
+      const newSelected = [...new Set([...selectedOrderIds, ...paginatedIds])];
+      setSelectedOrderIds(newSelected);
+    } else {
+      const paginatedIds = paginatedOrders.map((o: any) => o.id);
+      setSelectedOrderIds(selectedOrderIds.filter(id => !paginatedIds.includes(id)));
+    }
+  };
+
+  const handleSelectOrder = (id: string) => {
+    if (selectedOrderIds.includes(id)) {
+      setSelectedOrderIds(selectedOrderIds.filter(item => item !== id));
+    } else {
+      setSelectedOrderIds([...selectedOrderIds, id]);
+    }
+  };
 
   return (
     <div className="orders-container">
@@ -237,6 +429,9 @@ export default function OrdersApp() {
             <button className="btn-primary" onClick={handleOpenAdd}>➕ Thêm Đơn Mới</button>
             <button className="btn-secondary" onClick={fetchOrders} disabled={loading}>
               {loading ? 'Đang tải...' : '🔄 Làm Mới'}
+            </button>
+            <button className="btn-primary" style={{background: '#10b981', borderColor: '#10b981'}} onClick={() => setShowMap(true)}>
+              🗺️ Lộ Trình Giao
             </button>
             <button 
               className={`btn-secondary ${showDeleted ? 'active-trash' : ''}`} 
@@ -321,8 +516,14 @@ export default function OrdersApp() {
                   </div>
                   
                   <div className="form-group">
-                    <label>Địa Chỉ Giao Hàng</label>
-                    <input type="text" value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="VD: 137 Đặng Thái Thân, P. Thanh Vinh, Nghệ An" />
+                    <label>Địa Chỉ Giao Hàng <span style={{fontSize: '0.8rem', color: '#6b7280', fontWeight: 'normal'}}>(Nên chọn từ gợi ý của Google)</span></label>
+                    {isLoaded && mapApiKey ? (
+                      <Autocomplete onLoad={onLoadAutocomplete} onPlaceChanged={onPlaceChanged}>
+                        <input type="text" value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="Nhập địa chỉ và chọn từ danh sách gợi ý..." />
+                      </Autocomplete>
+                    ) : (
+                      <input type="text" value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="VD: 137 Đặng Thái Thân, P. Thanh Vinh, Nghệ An" />
+                    )}
                   </div>
 
                   <div className="form-group">
@@ -381,6 +582,81 @@ export default function OrdersApp() {
             </div>
           )}
 
+          {showMap && (
+            <div className="modal-overlay route-overlay">
+              <div className="modal-content route-modal" role="dialog" aria-modal="true" aria-labelledby="route-title">
+                <div className="route-modal-header">
+                  <h2 id="route-title">Lộ trình giao hàng</h2>
+                  <button type="button" className="route-close" onClick={() => setShowMap(false)}>Đóng ×</button>
+                </div>
+
+                <div className="route-modal-body">
+                  <div className="route-setup">
+                    <div className="route-origin">
+                      <label htmlFor="route-home-address">Địa chỉ xuất phát</label>
+                      <div className="route-origin-input">
+                        <input id="route-home-address" type="text" value={homeAddress} onChange={e => {
+                          setHomeAddress(e.target.value);
+                          localStorage.setItem('orders_home_address', e.target.value);
+                        }} placeholder="Nhập địa chỉ kho hoặc nhà" />
+                        <button type="button" className="route-location" title="Lấy vị trí hiện tại" aria-label="Lấy vị trí hiện tại" onClick={handleGetCurrentLocation} disabled={!isLoaded || isMapLoading}>📍</button>
+                      </div>
+                    </div>
+                    <button type="button" className="btn-primary route-optimize" onClick={handleOptimizeRoute} disabled={isMapLoading || !isLoaded}>
+                      {isMapLoading ? 'Đang tính toán...' : 'Tối ưu lộ trình'}
+                    </button>
+                  </div>
+
+                  {mapStatus && <p className="route-status" role="status">{mapStatus}</p>}
+
+                  <div className="route-layout">
+                    <section className="route-list-container" aria-label="Thứ tự giao hàng">
+                      <div className="route-heading">
+                        <h3>Thứ tự giao hàng</h3>
+                        {optimizedOrders.length > 0 && <span>{optimizedOrders.length - 1} điểm giao</span>}
+                      </div>
+                      {mapUrl && (
+                        <div className="route-actions">
+                          <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="route-maps-link" title="Mở lộ trình trong Google Maps">Mở Google Maps ↗</a>
+                          <button type="button" className="route-copy" aria-label="Sao chép liên kết Google Maps" onClick={() => { navigator.clipboard.writeText(mapUrl); alert('Đã sao chép liên kết!'); }}>Sao chép</button>
+                        </div>
+                      )}
+                      {optimizedOrders.length === 0 ? (
+                        <p className="route-empty">Chọn đơn hàng trong danh sách, sau đó bấm “Tối ưu lộ trình” để xem thứ tự giao.</p>
+                      ) : (
+                        <div className="route-items">
+                          {optimizedOrders.map((o, idx) => (
+                            <div className={`route-item ${idx === 0 ? 'route-item-home' : ''}`} key={o.id}>
+                              <div className="route-number">{idx === 0 ? '⌂' : idx}</div>
+                              <div className="route-details">
+                                <h4>{o.customer_name}{idx === 0 && <span> · Xuất phát</span>}</h4>
+                                <p>{o.address}</p>
+                                {o.product && <div className="route-product">{o.product}</div>}
+                                {o.phone && <div className="route-phone">{o.phone}</div>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                    <div className="map-container" aria-label="Bản đồ lộ trình">
+                      {isLoaded && mapApiKey ? (
+                        <GoogleMap mapContainerStyle={{width: '100%', height: '100%'}} center={{lat: 21.0285, lng: 105.8542}} zoom={12} options={{disableDefaultUI: true, zoomControl: true}}>
+                          {directionsResult && <DirectionsRenderer directions={directionsResult} options={{suppressMarkers: true}} />}
+                          {optimizedOrders.map((o, idx) => (
+                            <Marker key={o.id} position={{lat: o.lat, lng: o.lon}} label={{text: idx === 0 ? 'H' : idx.toString(), color: 'white', fontWeight: 'bold'}} />
+                          ))}
+                        </GoogleMap>
+                      ) : (
+                        <div className="map-placeholder">{!mapApiKey ? 'Cần cấu hình Google Maps API Key để xem bản đồ' : 'Đang tải bản đồ...'}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="orders-list">
             {showDeleted && <div style={{background: '#fef2f2', color: '#b91c1c', padding: '1rem', textAlign: 'center', fontWeight: 'bold'}}>🗑️ Đang hiển thị các đơn hàng trong Thùng Rác</div>}
             {filteredOrders.length === 0 && !loading && (
@@ -393,6 +669,14 @@ export default function OrdersApp() {
               <table className="orders-table">
                 <thead>
                   <tr>
+                    <th style={{width: '40px'}}>
+                      <input 
+                        type="checkbox" 
+                        onChange={handleSelectAll}
+                        checked={paginatedOrders.length > 0 && paginatedOrders.every((o: any) => selectedOrderIds.includes(o.id))}
+                        title="Chọn tất cả trên trang này"
+                      />
+                    </th>
                     <th>Khách & Nguồn</th>
                     <th>Địa Chỉ & SĐT</th>
                     <th>Sản Phẩm</th>
@@ -403,7 +687,15 @@ export default function OrdersApp() {
                 </thead>
                 <tbody>
                   {paginatedOrders.map((order: any) => (
-                    <tr key={order.id} style={{ opacity: order.is_deleted ? 0.7 : 1 }}>
+                    <tr key={order.id} style={{ opacity: order.is_deleted ? 0.7 : 1, background: selectedOrderIds.includes(order.id) ? '#f0fdf4' : '' }}>
+                      <td>
+                        <input 
+                          type="checkbox" 
+                          checked={selectedOrderIds.includes(order.id)}
+                          onChange={() => handleSelectOrder(order.id)}
+                          disabled={order.is_deleted}
+                        />
+                      </td>
                       <td>
                         <strong>{order.customer_name}</strong>
                         <div className="tag-platform">{order.platform}</div>
